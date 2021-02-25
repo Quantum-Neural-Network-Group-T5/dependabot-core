@@ -59,8 +59,8 @@ RUN apt-get install -y software-properties-common \
   && apt-get update \
   && apt-get install -y ruby2.6 ruby2.6-dev \
   && gem update --system 3.0.3 \
-  && gem install bundler -v 1.17.3 --no-document
-
+  && gem install bundler -v 1.17.3 --no-document \
+  && gem install bundler -v 2.2.11 --no-document
 
 ### PYTHON
 
@@ -195,6 +195,8 @@ RUN bash /opt/terraform/helpers/build /opt/terraform && \
   bash /opt/python/helpers/build /opt/python && \
   bash /opt/dep/helpers/build /opt/dep && \
   bash /opt/bundler/helpers/build /opt/bundler && \
+  bash /opt/bundler/helpers/v2/build /opt/bundler/v2 && \
+  bash /opt/bundler/helpers/v1/build /opt/bundler/v1 && \
   bash /opt/go_modules/helpers/build /opt/go_modules && \
   bash /opt/npm_and_yarn/helpers/build /opt/npm_and_yarn && \
   bash /opt/hex/helpers/build /opt/hex && \
