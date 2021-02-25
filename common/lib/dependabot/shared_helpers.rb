@@ -69,20 +69,24 @@ module Dependabot
     end
 
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/PerceivedComplexity
     def self.run_helper_subprocess(command:, function:, args:, env: nil,
                                    stderr_to_stdout: false,
-                                   allow_unsafe_shell_command: false)
+                                   allow_unsafe_shell_command: false,
+                                   unsetenv_others: false)
       start = Time.now
       stdin_data = JSON.dump(function: function, args: args)
       cmd = allow_unsafe_shell_command ? command : escape_command(command)
       env_cmd = [env, cmd].compact
       if ENV["DEBUG_FUNCTION"] == function
         escaped_stdin_data = stdin_data.gsub("\"", "\\\"")
-        puts "$ cd #{Dir.pwd} && echo \"#{escaped_stdin_data}\" | #{env_cmd.join(' ')}"
+        env_keys = env ? env.map { |k, v| "#{k}=#{v}" } : ""
+        puts "$ cd #{Dir.pwd} && echo \"#{escaped_stdin_data}\" | #{env_keys} #{cmd}"
         # Pause execution so we can run helpers inside the temporary directory
         byebug # rubocop:disable Lint/Debugger
       end
-      stdout, stderr, process = Open3.capture3(*env_cmd, stdin_data: stdin_data)
+
+      stdout, stderr, process = Open3.capture3(*env_cmd, stdin_data: stdin_data, unsetenv_others: unsetenv_others)
       time_taken = Time.now - start
 
       if ENV["DEBUG_HELPERS"] == "true"
@@ -121,6 +125,7 @@ module Dependabot
         error_context: error_context
       )
     end
+    # rubocop:enable Metrics/PerceivedComplexity
     # rubocop:enable Metrics/MethodLength
 
     def self.excon_middleware
