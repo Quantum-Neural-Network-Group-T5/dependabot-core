@@ -3,6 +3,7 @@
 require "dependabot/file_updaters"
 require "dependabot/file_updaters/base"
 require "dependabot/bundler/native_helpers"
+require "dependabot/bundler/helpers"
 require "dependabot/file_updaters/vendor_updater"
 
 module Dependabot
@@ -76,8 +77,14 @@ module Dependabot
 
         @vendor_cache_dir =
           SharedHelpers.run_helper_subprocess(
-            command: NativeHelpers.helper_path,
+            command: NativeHelpers.helper_path(bundler_version: bundler_version),
             function: "vendor_cache_dir",
+            env: {
+              "BUNDLER_VERSION" => bundler_version.tr("v", ""),
+              "PATH" => ENV["PATH"],
+              "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"]
+            },
+            unsetenv_others: true,
             args: {
               dir: repo_contents_path
             }
@@ -158,6 +165,10 @@ module Dependabot
         dependency_files.
           select { |file| file.name.end_with?(".gemspec") }.
           reject(&:support_file?)
+      end
+
+      def bundler_version
+        @bundler_version ||= Helpers.bundler_version(lockfile)
       end
     end
   end

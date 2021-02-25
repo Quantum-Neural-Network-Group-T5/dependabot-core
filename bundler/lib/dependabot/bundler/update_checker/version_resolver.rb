@@ -2,6 +2,7 @@
 
 require "excon"
 
+require "dependabot/bundler/helpers"
 require "dependabot/bundler/update_checker"
 require "dependabot/bundler/file_updater/lockfile_updater"
 require "dependabot/bundler/requirement"
@@ -67,6 +68,8 @@ module Dependabot
         end
 
         # rubocop:disable Metrics/PerceivedComplexity
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/MethodLength
         def fetch_latest_resolvable_version_details
           return latest_version_details unless gemfile
 
@@ -76,8 +79,14 @@ module Dependabot
             # potentially retrying in the case of the Ruby version being locked
             in_a_native_bundler_context(error_handling: false) do |tmp_dir|
               details =  SharedHelpers.run_helper_subprocess(
-                command: NativeHelpers.helper_path,
+                command: NativeHelpers.helper_path(bundler_version: bundler_version),
                 function: "resolve_version",
+                env: {
+                  "BUNDLER_VERSION" => bundler_version.tr("v", ""),
+                  "PATH" => ENV["PATH"],
+                  "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"]
+                },
+                unsetenv_others: true,
                 args: {
                   dependency_name: dependency.name,
                   dependency_requirements: dependency.requirements,
@@ -116,6 +125,8 @@ module Dependabot
           @gemspec_ruby_unlocked = true
           regenerate_dependency_files_without_ruby_lock && retry
         end
+        # rubocop:enable Metrics/MethodLength
+        # rubocop:enable Metrics/AbcSize
         # rubocop:enable Metrics/PerceivedComplexity
 
         def circular_dependency_at_new_version?(error)
@@ -217,6 +228,10 @@ module Dependabot
           return unless lockfile
 
           lockfile.content.match?(/BUNDLED WITH\s+2/m)
+        end
+
+        def bundler_version
+          @bundler_version ||= Helpers.bundler_version(lockfile)
         end
       end
     end

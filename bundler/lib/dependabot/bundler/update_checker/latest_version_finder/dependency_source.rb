@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "dependabot/bundler/native_helpers"
+require "dependabot/bundler/helpers"
+
 module Dependabot
   module Bundler
     class UpdateChecker
@@ -54,8 +57,14 @@ module Dependabot
             SharedHelpers.with_git_configured(credentials: credentials) do
               in_a_native_bundler_context do |tmp_dir|
                 SharedHelpers.run_helper_subprocess(
-                  command: NativeHelpers.helper_path,
+                  command: NativeHelpers.helper_path(bundler_version: bundler_version),
                   function: "depencency_source_latest_git_version",
+                  env: {
+                    "BUNDLER_VERSION" => bundler_version.tr("v", ""),
+                    "PATH" => ENV["PATH"],
+                    "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"]
+                  },
+                  unsetenv_others: true,
                   args: {
                     dir: tmp_dir,
                     gemfile_name: gemfile.name,
@@ -99,8 +108,14 @@ module Dependabot
             @private_registry_versions ||=
               in_a_native_bundler_context do |tmp_dir|
                 SharedHelpers.run_helper_subprocess(
-                  command: NativeHelpers.helper_path,
+                  command: NativeHelpers.helper_path(bundler_version: bundler_version),
                   function: "private_registry_versions",
+                  env: {
+                    "BUNDLER_VERSION" => bundler_version.tr("v", ""),
+                    "PATH" => ENV["PATH"],
+                    "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"]
+                  },
+                  unsetenv_others: true,
                   args: {
                     dir: tmp_dir,
                     gemfile_name: gemfile.name,
@@ -119,8 +134,14 @@ module Dependabot
 
             @source_type = in_a_native_bundler_context do |tmp_dir|
               SharedHelpers.run_helper_subprocess(
-                command: NativeHelpers.helper_path,
+                command: NativeHelpers.helper_path(bundler_version: bundler_version),
                 function: "dependency_source_type",
+                env: {
+                  "BUNDLER_VERSION" => bundler_version.tr("v", ""),
+                  "PATH" => ENV["PATH"],
+                  "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"]
+                },
+                unsetenv_others: true,
                 args: {
                   dir: tmp_dir,
                   gemfile_name: gemfile.name,
@@ -134,6 +155,15 @@ module Dependabot
           def gemfile
             dependency_files.find { |f| f.name == "Gemfile" } ||
               dependency_files.find { |f| f.name == "gems.rb" }
+          end
+
+          def lockfile
+            dependency_files.find { |f| f.name == "Gemfile.lock" } ||
+              dependency_files.find { |f| f.name == "gems.locked" }
+          end
+
+          def bundler_version
+            @bundler_version ||= Helpers.bundler_version(lockfile)
           end
         end
       end

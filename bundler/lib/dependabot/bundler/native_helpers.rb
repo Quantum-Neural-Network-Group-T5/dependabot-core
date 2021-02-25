@@ -3,8 +3,8 @@
 module Dependabot
   module Bundler
     module NativeHelpers
-      def self.helper_path
-        "bundle exec ruby #{File.join(native_helpers_root, 'run.rb')}"
+      def self.helper_path(bundler_version: "v1")
+        "bundle exec ruby #{File.join(native_helpers_root, bundler_version, 'run.rb')}"
       end
 
       def self.native_helpers_root
