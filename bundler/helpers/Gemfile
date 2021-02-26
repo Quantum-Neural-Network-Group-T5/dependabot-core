@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+# Intentionally empty Gemfile to allow running `bundle exec` on native helpers
+# without it trying to resolve a customers `Gemfile` dependencies

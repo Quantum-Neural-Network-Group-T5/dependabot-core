@@ -50,7 +50,8 @@ module Dependabot
               env: {
                 "BUNDLER_VERSION" => bundler_version.tr("v", ""),
                 "PATH" => ENV["PATH"],
-                "BUNDLE_GEMFILE" => ENV["BUNDLE_GEMFILE"]
+                "HOME" => ENV["HOME"],
+                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
               },
               unsetenv_others: true,
               args: {
