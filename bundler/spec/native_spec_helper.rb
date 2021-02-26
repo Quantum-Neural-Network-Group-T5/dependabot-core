@@ -50,6 +50,8 @@ RSpec.shared_context "in a temporary bundler directory" do
   end
 
   def in_tmp_folder(&block)
+    ENV["BUNDLER_VERSION"] = "1"
     Dir.chdir(tmp_path, &block)
+    ENV.delete("BUNDLER_VERSION")
   end
 end

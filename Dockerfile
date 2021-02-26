@@ -62,6 +62,7 @@ RUN apt-get install -y software-properties-common \
   && gem install bundler -v 1.17.3 --no-document
 
 # NOTE: For some reason this isn't succeeding if installed in the above RUN
+# Used to `bundle install` core's dependencies but not used in updates.
 RUN gem install bundler -v 2.2.11 --no-document
 
 ### PYTHON

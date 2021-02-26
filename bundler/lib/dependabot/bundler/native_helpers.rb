@@ -17,11 +17,7 @@ module Dependabot
           env: {
             # Bundler will pick the matching installed major version
             "BUNDLER_VERSION" => bundler_env_version,
-            # Force bundler to load dependencies from an empty Gemfile so it
-            # doesn't try to resolve dependencies from the customers
-            # Gemfile/lockfile
-            "BUNDLE_GEMFILE" => File.join(native_helpers_root, "Gemfile"),
-            # Required to find the bundler and ruby bin
+            # Required to find the ruby bin
             "PATH" => ENV["PATH"],
             # Requried to create tmp directories in a writeable folder
             "HOME" => ENV["HOME"]
@@ -30,7 +26,7 @@ module Dependabot
       end
 
       def self.helper_path(bundler_version: "v1")
-        "bundle exec ruby #{File.join(native_helpers_root, bundler_version, 'run.rb')}"
+        "ruby #{File.join(native_helpers_root, bundler_version, 'run.rb')}"
       end
 
       def self.native_helpers_root
