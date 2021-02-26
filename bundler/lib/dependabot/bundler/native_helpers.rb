@@ -19,8 +19,10 @@ module Dependabot
             "BUNDLER_VERSION" => bundler_env_version,
             # Required to find the ruby bin
             "PATH" => ENV["PATH"],
-            # Requried to create tmp directories in a writeable folder
-            "HOME" => ENV["HOME"]
+            # # Requried to create tmp directories in a writeable folder
+            "HOME" => ENV["HOME"],
+            # Required by git
+            "SSH_AUTH_SOCK" => ENV["SSH_AUTH_SOCK"]
           }
         )
       end
