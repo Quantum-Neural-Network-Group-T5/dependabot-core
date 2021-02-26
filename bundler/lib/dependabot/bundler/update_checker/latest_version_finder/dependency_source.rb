@@ -110,7 +110,9 @@ module Dependabot
                     dependency_name: dependency.name,
                     credentials: credentials
                   }
-                )
+                ).map do |version_string|
+                  Gem::Version.new(version_string)
+                end
               end
           end
 

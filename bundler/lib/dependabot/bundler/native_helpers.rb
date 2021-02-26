@@ -21,7 +21,9 @@ module Dependabot
             "PATH" => ENV["PATH"],
             # # Requried to create tmp directories in a writeable folder
             "HOME" => ENV["HOME"],
-            # Required by git
+            # Required to git clone to a writeable folder
+            "GEM_HOME" => ENV["GEM_HOME"],
+            # Required by git fetch
             "SSH_AUTH_SOCK" => ENV["SSH_AUTH_SOCK"]
           }
         )
