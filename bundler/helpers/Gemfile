@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+# NOTE: Common constant used in customers gemspec's
+require "find"
 
 # Intentionally empty Gemfile to allow running `bundle exec` on native helpers
 # without it trying to resolve a customers `Gemfile` dependencies
