@@ -56,16 +56,9 @@ module Dependabot
 
             SharedHelpers.with_git_configured(credentials: credentials) do
               in_a_native_bundler_context do |tmp_dir|
-                SharedHelpers.run_helper_subprocess(
-                  command: NativeHelpers.helper_path(bundler_version: bundler_version),
+                NativeHelpers.run_bundler_subprocess(
+                  bundler_version: bundler_version,
                   function: "depencency_source_latest_git_version",
-                  env: {
-                    "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                    "PATH" => ENV["PATH"],
-                    "HOME" => ENV["HOME"],
-                    "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-                  },
-                  unsetenv_others: true,
                   args: {
                     dir: tmp_dir,
                     gemfile_name: gemfile.name,
@@ -108,25 +101,16 @@ module Dependabot
           def private_registry_versions
             @private_registry_versions ||=
               in_a_native_bundler_context do |tmp_dir|
-                SharedHelpers.run_helper_subprocess(
-                  command: NativeHelpers.helper_path(bundler_version: bundler_version),
+                NativeHelpers.run_bundler_subprocess(
+                  bundler_version: bundler_version,
                   function: "private_registry_versions",
-                  env: {
-                    "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                    "PATH" => ENV["PATH"],
-                    "HOME" => ENV["HOME"],
-                    "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-                  },
-                  unsetenv_others: true,
                   args: {
                     dir: tmp_dir,
                     gemfile_name: gemfile.name,
                     dependency_name: dependency.name,
                     credentials: credentials
                   }
-                ).map do |version_string|
-                  Gem::Version.new(version_string)
-                end
+                )
               end
           end
 
@@ -135,16 +119,9 @@ module Dependabot
             return @source_type = RUBYGEMS unless gemfile
 
             @source_type = in_a_native_bundler_context do |tmp_dir|
-              SharedHelpers.run_helper_subprocess(
-                command: NativeHelpers.helper_path(bundler_version: bundler_version),
+              NativeHelpers.run_bundler_subprocess(
+                bundler_version: bundler_version,
                 function: "dependency_source_type",
-                env: {
-                  "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                  "PATH" => ENV["PATH"],
-                  "HOME" => ENV["HOME"],
-                  "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-                },
-                unsetenv_others: true,
                 args: {
                   dir: tmp_dir,
                   gemfile_name: gemfile.name,

@@ -44,16 +44,9 @@ module Dependabot
 
         def force_update
           in_a_native_bundler_context(error_handling: false) do |tmp_dir|
-            updated_deps, specs = SharedHelpers.run_helper_subprocess(
-              command: NativeHelpers.helper_path(bundler_version: bundler_version),
+            updated_deps, specs = NativeHelpers.run_bundler_subprocess(
+              bundler_version: bundler_version,
               function: "force_update",
-              env: {
-                "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                "PATH" => ENV["PATH"],
-                "HOME" => ENV["HOME"],
-                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-              },
-              unsetenv_others: true,
               args: {
                 dir: tmp_dir,
                 dependency_name: dependency.name,

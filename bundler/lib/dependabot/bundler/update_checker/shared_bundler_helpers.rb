@@ -164,16 +164,9 @@ module Dependabot
 
         def inaccessible_git_dependencies
           in_a_native_bundler_context(error_handling: false) do |tmp_dir|
-            git_specs = SharedHelpers.run_helper_subprocess(
-              command: NativeHelpers.helper_path(bundler_version: bundler_version),
+            git_specs = NativeHelpers.run_bundler_subprocess(
+              bundler_version: bundler_version,
               function: "git_specs",
-              env: {
-                "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                "PATH" => ENV["PATH"],
-                "HOME" => ENV["HOME"],
-                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-              },
-              unsetenv_others: true,
               args: {
                 dir: tmp_dir,
                 gemfile_name: gemfile.name,
@@ -195,16 +188,9 @@ module Dependabot
 
         def jfrog_source
           in_a_native_bundler_context(error_handling: false) do |dir|
-            SharedHelpers.run_helper_subprocess(
-              command: NativeHelpers.helper_path(bundler_version: bundler_version),
+            NativeHelpers.run_bundler_subprocess(
+              bundler_version: bundler_version,
               function: "jfrog_source",
-              env: {
-                "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                "PATH" => ENV["PATH"],
-                "HOME" => ENV["HOME"],
-                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-              },
-              unsetenv_others: true,
               args: {
                 dir: dir,
                 gemfile_name: gemfile.name,

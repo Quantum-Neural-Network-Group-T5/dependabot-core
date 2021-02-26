@@ -29,16 +29,9 @@ module Dependabot
         #   * requirement [String] the requirement on the target_dependency
         def conflicting_dependencies(dependency:, target_version:)
           in_a_native_bundler_context(error_handling: false) do |tmp_dir|
-            SharedHelpers.run_helper_subprocess(
-              command: NativeHelpers.helper_path(bundler_version: bundler_version),
+            NativeHelpers.run_bundler_subprocess(
+              bundler_version: bundler_version,
               function: "conflicting_dependencies",
-              env: {
-                "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                "PATH" => ENV["PATH"],
-                "HOME" => ENV["HOME"],
-                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-              },
-              unsetenv_others: true,
               args: {
                 dir: tmp_dir,
                 dependency_name: dependency.name,

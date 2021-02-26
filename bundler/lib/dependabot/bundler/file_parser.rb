@@ -130,16 +130,9 @@ module Dependabot
                                                       repo_contents_path) do
             write_temporary_dependency_files
 
-            SharedHelpers.run_helper_subprocess(
-              command: NativeHelpers.helper_path(bundler_version: bundler_version),
+            NativeHelpers.run_bundler_subprocess(
+              bundler_version: bundler_version,
               function: "parsed_gemfile",
-              env: {
-                "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                "PATH" => ENV["PATH"],
-                "HOME" => ENV["HOME"],
-                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-              },
-              unsetenv_others: true,
               args: {
                 gemfile_name: gemfile.name,
                 lockfile_name: lockfile&.name,
@@ -167,16 +160,9 @@ module Dependabot
                                                       repo_contents_path) do
             write_temporary_dependency_files
 
-            SharedHelpers.run_helper_subprocess(
-              command: NativeHelpers.helper_path(bundler_version: bundler_version),
+            NativeHelpers.run_bundler_subprocess(
+              bundler_version: bundler_version,
               function: "parsed_gemspec",
-              env: {
-                "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                "PATH" => ENV["PATH"],
-                "HOME" => ENV["HOME"],
-                "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-              },
-              unsetenv_others: true,
               args: {
                 gemspec_name: file.name,
                 lockfile_name: lockfile&.name,

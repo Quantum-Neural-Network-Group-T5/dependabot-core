@@ -78,16 +78,9 @@ module Dependabot
             # some errors we want to handle specifically ourselves, including
             # potentially retrying in the case of the Ruby version being locked
             in_a_native_bundler_context(error_handling: false) do |tmp_dir|
-              details =  SharedHelpers.run_helper_subprocess(
-                command: NativeHelpers.helper_path(bundler_version: bundler_version),
+              details = NativeHelpers.run_bundler_subprocess(
+                bundler_version: bundler_version,
                 function: "resolve_version",
-                env: {
-                  "BUNDLER_VERSION" => bundler_version.tr("v", ""),
-                  "PATH" => ENV["PATH"],
-                  "HOME" => ENV["HOME"],
-                  "BUNDLE_GEMFILE" => File.join(NativeHelpers.native_helpers_root, "Gemfile")
-                },
-                unsetenv_others: true,
                 args: {
                   dependency_name: dependency.name,
                   dependency_requirements: dependency.requirements,
